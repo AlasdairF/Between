@@ -6,6 +6,7 @@ import (
  "errors"
 )
 
+// Bytes returns the result as a slice of bytes.
 func Bytes(from, to, b []byte) ([]byte, error) {
 	s := bytes.Index(b, from)
 	if s==-1 {
@@ -19,10 +20,11 @@ func Bytes(from, to, b []byte) ([]byte, error) {
 	return b[s:s+e], nil
 }
 
+// Int returns the result as an int.
 func Int(from, to, b []byte) (int, error) {
 	s := bytes.Index(b, from)
 	if s==-1 {
-		return -1,  errors.New("From does not exist.")
+		return -1, errors.New("From does not exist.")
 	}
 	s += len(from)
 	e := bytes.Index(b[s:], to)
@@ -36,10 +38,11 @@ func Int(from, to, b []byte) (int, error) {
 	return int(v), nil
 }
 
+// Float returns the result as a float64.
 func Float(from, to, b []byte) (float64, error) {
 	s := bytes.Index(b, from)
 	if s==-1 {
-		return -1,  errors.New("From does not exist.")
+		return -1, errors.New("From does not exist.")
 	}
 	s += len(from)
 	e := bytes.Index(b[s:], to)
