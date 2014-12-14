@@ -6,6 +6,13 @@ import (
  "errors"
 )
 
+func Crop(b, at []byte) []byte {
+	if i := bytes.Index(b, at); i > 0 {
+		return b[i:]
+	}
+	return b
+}
+
 // Bytes returns the result as a slice of bytes.
 func Bytes(b, from, to []byte) ([]byte, error) {
 	s := bytes.Index(b, from)
