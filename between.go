@@ -60,12 +60,12 @@ func Int(b, from, to []byte, within int) (int, error) {
 	for {
 		pos = bytes.Index(b, from)
 		if pos == -1 {
-			return nil, errors.New("From does not exist.")
+			return 0, errors.New("From does not exist.")
 		}
 		b = b[pos + len(from):]
 		pos = bytes.Index(b, to)
 		if pos == -1 {
-			return nil, errors.New("To does not exist.")
+			return 0, errors.New("To does not exist.")
 		}
 		if pos < within || within < 0  {
 			return conv.Int(b[0:pos]), nil
