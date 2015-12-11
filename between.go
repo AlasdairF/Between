@@ -2,7 +2,7 @@ package between
 
 import (
  "bytes"
- "strconv"
+ "github.com/AlasdairF/Conv"
  "errors"
 )
 
@@ -14,113 +14,83 @@ func Crop(b, at []byte) []byte {
 }
 
 // Bytes returns the result as a slice of bytes.
-func Bytes(b, from, to []byte) ([]byte, error) {
-	s := bytes.Index(b, from)
-	if s==-1 {
-		return nil, errors.New("From does not exist.")
-	}
-	s += len(from)
-	e := bytes.Index(b[s:], to)
-	if e==-1 {
+func Bytes(b, from, to []byte, within int) ([]byte, error) {
+	var pos int
+	for {
+		pos = bytes.Index(b, from)
+		if pos == -1 {
+			return nil, errors.New("From does not exist.")
+		}
+		b = b[pos + len(from):]
+		pos = bytes.Index(b, to)
+		if pos == -1 {
 			return nil, errors.New("To does not exist.")
 		}
-	return b[s:s+e], nil
+		if pos < within || within < 0  {
+			return b[0:pos], nil
+		}
+		b = b[pos + len(to):]
+	}
 }
 
-// AllInts returns all results between from & to.
-func AllBytes(b, from, to []byte) [][]byte {
+// AllBytes returns all results between from & to.
+func AllBytes(b, from, to []byte, within int) [][]byte {
 	result := make([][]byte, 0)
-	l := len(to)
+	var pos int
 	for {
-		s := bytes.Index(b, from)
-		if s==-1 {
+		pos = bytes.Index(b, from)
+		if pos == -1 {
 			return result
 		}
-		s += len(from)
-		e := bytes.Index(b[s:], to)
-		if e==-1 {
-				return result
-			}
-		f := s + e
-		result = append(result,b[s:f])
-		b = b[f+l:]
+		b = b[pos + len(from):]
+		pos = bytes.Index(b, to)
+		if pos == -1 {
+			return result
+		}
+		if pos < within || within < 0  {
+			result = append(result, b[0:pos])
+			b = b[pos + len(to):]
+		}
 	}
 }
 
 // Int returns the result as an int.
-func Int(b, from, to []byte) (int, error) {
-	s := bytes.Index(b, from)
-	if s==-1 {
-		return -1, errors.New("From does not exist.")
-	}
-	s += len(from)
-	e := bytes.Index(b[s:], to)
-	if e==-1 {
-			return -1, errors.New("To does not exist.")
+func Int(b, from, to []byte, within int) (int, error) {
+	var pos int
+	for {
+		pos = bytes.Index(b, from)
+		if pos == -1 {
+			return nil, errors.New("From does not exist.")
 		}
-	v, err := strconv.ParseInt(string(b[s:s+e]),10,64)
-	if err!=nil {
-		return -1, errors.New("Result not an int.")
+		b = b[pos + len(from):]
+		pos = bytes.Index(b, to)
+		if pos == -1 {
+			return nil, errors.New("To does not exist.")
+		}
+		if pos < within || within < 0  {
+			return conv.Int(b[0:pos]), nil
+		}
+		b = b[pos + len(to):]
 	}
-	return int(v), nil
 }
 
 // AllInt returns all results between from & to as int.
-func AllInt(b, from, to []byte) []int {
+func AllInt(b, from, to []byte, within int) []int {
 	result := make([]int, 0)
-	l := len(to)
+	var pos int
 	for {
-		s := bytes.Index(b, from)
-		if s==-1 {
+		pos = bytes.Index(b, from)
+		if pos == -1 {
 			return result
 		}
-		s += len(from)
-		e := bytes.Index(b[s:], to)
-		if e==-1 {
-				return result
-			}
-		f := s + e
-		v, _ := strconv.ParseInt(string(b[s:f]),10,64)
-		result = append(result,int(v))
-		b = b[f+l:]
-	}
-}
-
-// Float returns the result as a float64.
-func Float(b, from, to []byte) (float64, error) {
-	s := bytes.Index(b, from)
-	if s==-1 {
-		return -1, errors.New("From does not exist.")
-	}
-	s += len(from)
-	e := bytes.Index(b[s:], to)
-	if e==-1 {
-			return -1, errors.New("To does not exist.")
-		}
-	v, err := strconv.ParseFloat(string(b[s:s+e]),64)
-	if err!=nil {
-		return -1, errors.New("Result not a float.")
-	}
-	return v, nil
-}
-
-// AllFloat returns all results between from & to as float64.
-func AllFloat(b, from, to []byte) []float64 {
-	result := make([]float64, 0)
-	l := len(to)
-	for {
-		s := bytes.Index(b, from)
-		if s==-1 {
+		b = b[pos + len(from):]
+		pos = bytes.Index(b, to)
+		if pos == -1 {
 			return result
 		}
-		s += len(from)
-		e := bytes.Index(b[s:], to)
-		if e==-1 {
-				return result
-			}
-		f := s + e
-		v, _ := strconv.ParseFloat(string(b[s:s+e]),64)
-		result = append(result,v)
-		b = b[f+l:]
+		if pos < within || within < 0  {
+			result = append(result, conv.Int(b[0:pos]))
+			b = b[pos + len(to):]
+		}
 	}
 }
