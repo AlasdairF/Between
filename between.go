@@ -28,8 +28,8 @@ func Bytes(b, from, to []byte, within int) ([]byte, error) {
 		}
 		if pos < within || within < 0  {
 			return b[0:pos], nil
+			b = b[pos + len(to):]
 		}
-		b = b[pos + len(to):]
 	}
 }
 
@@ -69,8 +69,8 @@ func Int(b, from, to []byte, within int) (int, error) {
 		}
 		if pos < within || within < 0  {
 			return conv.Int(b[0:pos]), nil
+			b = b[pos + len(to):]
 		}
-		b = b[pos + len(to):]
 	}
 }
 
